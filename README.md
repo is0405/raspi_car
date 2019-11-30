@@ -4,4 +4,4 @@ quintic_polynomial_planner.pyは、
 PythonRobotics/PathPlanning/QuinticPolynomialsPlannerを基に
 コードを少し改変した.
 
-参照 https://github.com/AtsushiSakai/PythonRobotics#table-of-contents
+参照 https://github.com/AtsushiSakai/PythonRobotics
