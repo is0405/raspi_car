@@ -2,8 +2,6 @@ import time
 import RPi.GPIO as GPIO
 import go
 
-time.sleep(3)
-
 GPIO.setmode(GPIO.BCM)
 
 GPIO.setup(22, GPIO.OUT)
@@ -21,6 +19,17 @@ pwmR.start(0)
 GPIO.output(24, 1)
 
 def forward( cycle_l, cycle_r ):
+    if cycle_l > 0 and cycle_l < 65:
+        if (cycle_l - cycle_r) > 0:
+            cycle_l = 65 + (cycle_l - cycle_r)
+        else:
+            cycle_l = 65
+    if cycle_r > 0 and cycle_r < 65:
+        if (cycle_r - cycle_l) > 0:
+            cycle_r = 65 + (cycle_r - cycle_l)
+        else:
+            cycle_r = 65
+    
     pwmL.ChangeDutyCycle(cycle_l)
     GPIO.output(17, 0)
     GPIO.output(27, 1)
@@ -47,7 +56,8 @@ if not final:
     
     for i in range(len(v_l)):
         forward(round(v_l[i] * 100/0.7), round(v_r[i] * 100 /0.7))
-
+        time.sleep(0.05)
+        
 pwmL.stop()
 pwmR.stop()
 
