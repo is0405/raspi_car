@@ -129,8 +129,6 @@ def quinic( start_x ):
     ok, ca_x, ca_y, W, H = vision()
     if ok:
         ans = calclate_y(ca_x, W, start_x)
-        print(W)
-        print(ca_x)
         print(ans)
         sx = start_x  # start x position [m]
         sy_l = -0.0625  # start y position [m]

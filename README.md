@@ -12,5 +12,7 @@ vision関数 : カメラで画像取得し,フレーム内の×の重心を算�
 calculate_y関数 : 引数に重心X,フレームのWidthをとる.
                   カメラの焦点距離,画素値から実際にどれだけ離れているか算出しその答えを返す.
                   
-quintic_polynomials_planner : PythonRobotics/PathPlanning/QuinticPolynomialsPlannerから引用.
+quintic_polynomials_planner関数 : PythonRobotics/PathPlanning/QuinticPolynomialsPlannerから引用.
+
+quinic関数 : 引数にxをとる。初期設定
 
