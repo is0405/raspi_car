@@ -3,11 +3,12 @@ import RPi.GPIO as GPIO
 import cv2
 import numpy as np
 
+
 def image_draw(frame, mask, width, height):
     # calc 
     mu = cv2.moments(mask, False)
     ok = False
-    
+
     if mu["m00"] != 0:
         x, y = int(mu["m10"]/mu["m00"]) , int(mu["m01"]/mu["m00"])
         ok = True
@@ -25,34 +26,41 @@ def image(img):
     opening = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
 
     return opening
-    
-def forward( pwmL, pwmR, cycle_l, cycle_r ):    
+
+def forward( pwmL, pwmR, cycle_l, cycle_r ):
     pwmL.ChangeDutyCycle(cycle_l)
     GPIO.output(17, 0)
     GPIO.output(27, 1)
     pwmR.ChangeDutyCycle(cycle_r)
     GPIO.output(9, 1)
     GPIO.output(10, 0)
-    time.sleep(0.1)
 
-def move( x, y , width):
-    if x < -width/2 + width/8:
-        forward(pwmL, pwmR, 75, 90)
-    elif x < -width/4:
-        forward(pwmL, pwmR, 80, 90)
-    elif x < -width/8:
-        forward(pwmL, pwmR, 80, 85)
-    elif width/2 - width/8 < x:
-        forward(pwmL, pwmR, 90, 75)
+def back( pwmL, pwmR, cycle_l, cycle_r ):
+    pwmL.ChangeDutyCycle(cycle_l)
+    GPIO.output(17, 1)
+    GPIO.output(27, 0)
+    pwmR.ChangeDutyCycle(cycle_r)
+    GPIO.output(9, 0)
+    GPIO.output(10, 1)
+
+def move( x, y, width, mode):
+    if x < -width/4:
+        forward(pwmL, pwmR, 25, 0)
+        print(1)
     elif width/4 < x:
-        forward(pwmL, pwmR, 90, 80)
-    elif width/8 < x:
-        forward(pwmL, pwmR, 85, 80)
+        forward(pwmL, pwmR, 0, 25)
+        print(8)
     else:
-        forward(pwmL, pwmR, 80, 80)
-        
+        if mode:
+            forward(pwmL, pwmR, 80, 80)
+            print(4)
+        else:
+            forward(pwmL, pwmR, 100, 100)
+            print(5)
+
 
 if __name__ == '__main__':
+
     GPIO.setmode(GPIO.BCM)
 
     GPIO.setup(22, GPIO.OUT)
@@ -75,6 +83,9 @@ if __name__ == '__main__':
     # height
     H = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
+    before_ok = False
+    count = 0
+
     while cap.isOpened():
         # get a frame
         _, frame = cap.read()
@@ -92,20 +103,40 @@ if __name__ == '__main__':
 
         px_count = np.count_nonzero(mask)
 
-        if px_count < 2000:
-            ok = False
-    
-        if px_count > 70000:
-            forward(pwmL, pwmR, 0, 0)
-            break
+        if px_count < 100:
+           ok = False
 
         if ok:
-            move(ans_x, ans_y, W)
-            print("found")
+            before_ok = True
+
+        save_mode = False
+        if px_count > 50000:
+            forward(pwmL, pwmR, 0, 0)
+            break
+        elif px_count > 30000:
+            save_mode = True
+
+        if ok:
+            move(ans_x, ans_y, W, save_mode)
+            count = 0
+            cv2.imwrite("frame" + str(px_count) + ".png", frame)
+            cv2.imwrite("mask" + str(px_count) + ".png", mask)
+            print("found " + str(ans_x) +" " + str(ans_y))
         else:
-            forward(pwmL, pwmR, 90, 90)
-            print("not found")
-    
+            if before_ok:
+                count += 1
+                if count > 50:
+                    before_ok = False
+                    forward(pwmL, pwmR, 28, 0)
+                    time.sleep(1)
+                    forward(pwmL, pwmR, 0, 28)
+                    print("round")
+                else:
+                    back(pwmL, pwmR, 30, 30)
+                    print("back")
+            else:
+                forward(pwmL, pwmR, 80, 80)
+                print("not found")
 
 
     cap.release()
