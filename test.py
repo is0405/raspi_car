@@ -7,6 +7,7 @@ while( not result[0] ):
     if start_x >= 4.2:
         final = True
         break
+    
     start_x += 0.7
     result = go.quinic(start_x)
 
