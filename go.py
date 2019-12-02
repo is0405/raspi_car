@@ -42,29 +42,30 @@ def vision():
     ans_x = 0
     ans_y = 0
     
-    if not ok:
+    if ok:
         ans_x = x - W/2
         ans_y = y - H/2
         
     cv2.imwrite('frame.png' , frame)
-
+    cv2.imwrite('mask.png' , mask)
+    
     cap.release()
     cv2.destroyAllWindows()
 
     return ok, ans_x, ans_y, W, H
 
-def calclate_y(x, w):
+def calclate_y(x, w, start_x):
     
     #distance(m)
-    dif_z = 5
+    dif_z = 5 - start_x
     #resolution
     res_x = 2592
     res_y = 1944
 
     #forcal length(m)
-    focal_len = 3.29e-2
+    focal_len = 0.0000329#3.29e-5
     #m/px
-    px = 1.4e-6
+    px = 0.000000014#1.4e-8
 
     ans = ( dif_z * res_x * px * x ) / ( focal_len * w )
 
@@ -127,8 +128,10 @@ def quinic( start_x ):
 
     ok, ca_x, ca_y, W, H = vision()
     if ok:
-        ans = calclate_y(ca_x, W)
-
+        ans = calclate_y(ca_x, W, start_x)
+        print(W)
+        print(ca_x)
+        print(ans)
         sx = start_x  # start x position [m]
         sy_l = -0.0625  # start y position [m]
         sy_r = 0.0625
