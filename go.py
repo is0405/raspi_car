@@ -53,7 +53,7 @@ def vision():
     emergency = False
     if px_count > 70000:
         emergency = True
-        
+
     cv2.imwrite('frame' + str(px_count) + '.png' , frame)
     cv2.imwrite('mask' + str(px_count) + '.png' , mask)
 
