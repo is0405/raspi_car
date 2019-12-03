@@ -19,8 +19,8 @@ def vision():
     # BGR to HSV
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    lower = np.array([150, 128, 30])
-    upper = np.array([180, 255, 255])
+    lower = np.array([60/2, 58, 80])
+    upper = np.array([170/2, 255, 20])
     
     mask = cv2.inRange(hsv, lower, upper)
 
