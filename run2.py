@@ -19,16 +19,16 @@ pwmR.start(0)
 GPIO.output(24, 1)
 
 def forward( cycle_l, cycle_r ):
-    if cycle_l > 0 and cycle_l < 65:
+    if cycle_l > 0 and cycle_l < 75:
         if (cycle_l - cycle_r) > 0:
-            cycle_l = 65 + (cycle_l - cycle_r)
+            cycle_l =  75+ (cycle_l - cycle_r)
         else:
-            cycle_l = 65
-    if cycle_r > 0 and cycle_r < 65:
+            cycle_l = 75
+    if cycle_r > 0 and cycle_r < 75:
         if (cycle_r - cycle_l) > 0:
-            cycle_r = 65 + (cycle_r - cycle_l)
+            cycle_r = 75 + (cycle_r - cycle_l)
         else:
-            cycle_r = 65
+            cycle_r = 75
     
     pwmL.ChangeDutyCycle(cycle_l)
     GPIO.output(17, 0)
@@ -44,18 +44,23 @@ while( not result[0] ):
     forward(100, 100)
     time.sleep(1)
     forward(0, 0)
-    if start_x >= 4.2:
+    if start_x >= 3.6:
         final = True
         break
     start_x += 0.7
     result = go.quinic(start_x)
+    if result[3]:
+        forward(0,0)
+        print("emergency stop")
 
-if not final:
-    v_l = result[1]
-    v_r = result[2]
+if final:
+    print("Green is not found")
+else:
+    v_l = result[1] * 100/0.7
+    v_r = result[2] * 100/0.7
     
     for i in range(len(v_l)):
-        forward(round(v_l[i] * 100/0.7), round(v_r[i] * 100 /0.7))
+        forward(round(v_l[i]), round(v_r[i]))
         time.sleep(0.05)
         
 pwmL.stop()

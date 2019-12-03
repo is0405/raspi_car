@@ -12,15 +12,15 @@ def vision():
     W = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     # height
     H = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
+        
     # get a frame
     _, frame = cap.read()
 
     # BGR to HSV
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
+        
     lower = np.array([60/2, 58, 80])
-    upper = np.array([170/2, 255, 20])
+    upper = np.array([170/2, 255, 200])
     
     mask = cv2.inRange(hsv, lower, upper)
 
@@ -28,7 +28,7 @@ def vision():
     mu = cv2.moments(mask, False)
 
     ok = False
-
+    
     if mu["m00"] != 0:
         x, y = int(mu["m10"]/mu["m00"]) , int(mu["m01"]/mu["m00"])
         ok = True
@@ -41,18 +41,26 @@ def vision():
 
     ans_x = 0
     ans_y = 0
-    
+    px_count = np.count_nonzero(mask)
+
+    if px_count < 2000:
+        ok = False
+        
     if ok:
         ans_x = x - W/2
         ans_y = y - H/2
+
+    emergency = False
+    if px_count > 70000:
+        emergency = True
         
-    cv2.imwrite('frame.png' , frame)
-    cv2.imwrite('mask.png' , mask)
-    
+    cv2.imwrite('frame' + str(px_count) + '.png' , frame)
+    cv2.imwrite('mask' + str(px_count) + '.png' , mask)
+
     cap.release()
     cv2.destroyAllWindows()
 
-    return ok, ans_x, ans_y, W, H
+    return ok, ans_x, ans_y, W, H, emergency
 
 def calclate_y(x, w, start_x):
     
@@ -126,8 +134,9 @@ def quintic_polynomials_planner(sx, sy, syaw, sv, sa, gx, gy, gyaw, gv, ga, max_
 def quinic( start_x ):
     print(__file__ + " start!!")
 
-    ok, ca_x, ca_y, W, H = vision()
-    if ok:
+    ok, ca_x, ca_y, W, H, emergency = vision()
+    
+    if ok and not emergency:
         ans = calclate_y(ca_x, W, start_x)
         print(ans)
         sx = start_x  # start x position [m]
@@ -155,8 +164,8 @@ def quinic( start_x ):
         time_r, x_r, y_r, yaw_r, v_r, a_r, j_r = quintic_polynomials_planner(
             sx, sy_r, syaw, sv_r, sa_r, gx, gy, gyaw, gv, ga, max_vel, max_accel, max_jerk, dt)
 
-        return True, v_l, v_r
+        return True, v_l, v_r, False
     else:
-        return False, 0, 0
+        return False, 0, 0, emergency
 
     
