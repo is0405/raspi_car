@@ -38,15 +38,15 @@ def forward( pwmL, pwmR, cycle_l, cycle_r ):
 def move( x, y , width):
     if x < -width/2 + width/8:
         forward(pwmL, pwmR, 75, 90)
-    elif x < -width/2 + width/4:
+    elif x < -width/4:
         forward(pwmL, pwmR, 80, 90)
-    elif x < -width/2 + 3*width/4:
+    elif x < -width/8:
         forward(pwmL, pwmR, 80, 85)
     elif width/2 - width/8 < x:
         forward(pwmL, pwmR, 90, 75)
-    elif width/2 - width/4 < x:
+    elif width/4 < x:
         forward(pwmL, pwmR, 90, 80)
-    elif width/2 - 3*width/8 < x:
+    elif width/8 < x:
         forward(pwmL, pwmR, 85, 80)
     else:
         forward(pwmL, pwmR, 80, 80)
