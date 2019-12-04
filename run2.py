@@ -18,18 +18,7 @@ pwmL.start(0)
 pwmR.start(0)
 GPIO.output(24, 1)
 
-def forward( cycle_l, cycle_r ):
-    if cycle_l > 0 and cycle_l < 75:
-        if (cycle_l - cycle_r) > 0:
-            cycle_l =  75+ (cycle_l - cycle_r)
-        else:
-            cycle_l = 75
-    if cycle_r > 0 and cycle_r < 75:
-        if (cycle_r - cycle_l) > 0:
-            cycle_r = 75 + (cycle_r - cycle_l)
-        else:
-            cycle_r = 75
-    
+def forward( cycle_l, cycle_r ):    
     pwmL.ChangeDutyCycle(cycle_l)
     GPIO.output(17, 0)
     GPIO.output(27, 1)
