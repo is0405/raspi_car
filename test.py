@@ -83,6 +83,7 @@ if __name__ == '__main__':
         upper = np.array([170/2, 255, 200])
     
         mask = cv2.inRange(hsv, lower, upper)
+        cv2.imshow("mask1",mask)
         mask = image(mask)
 
         frame, mask, ans_x, ans_y, ok = image_draw(frame, mask, W, H)
@@ -104,7 +105,7 @@ if __name__ == '__main__':
             print("not found")
 
         cv2.imshow("frame",frame)
-        cv2.imshow("mask",mask)
+        cv2.imshow("mask2",mask)
         if cv2.waitKey(5) & 0xFF == 27:
             break
 
