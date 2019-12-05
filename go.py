@@ -23,7 +23,8 @@ def vision():
     upper = np.array([170/2, 255, 200])
     
     mask = cv2.inRange(hsv, lower, upper)
-
+    kernel = np.ones((5,5),np.uint8)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
     # calc 
     mu = cv2.moments(mask, False)
 
@@ -42,16 +43,13 @@ def vision():
     ans_x = 0
     ans_y = 0
     px_count = np.count_nonzero(mask)
-
-    if px_count < 2000:
-        ok = False
         
     if ok:
         ans_x = x - W/2
         ans_y = y - H/2
 
     emergency = False
-    if px_count > 70000:
+    if px_count > 100000:
         emergency = True
 
     cv2.imwrite('frame' + str(px_count) + '.png' , frame)
@@ -151,7 +149,7 @@ def quinic( start_x ):
         gx = 5.0  # goal x position [m]
         gy = ans  # goal y position [m]
         gyaw = np.deg2rad(0.0)  # goal yaw angle [rad]
-        gv = 0.0  # goal speed [m/s]
+        gv = 0.21  # goal speed [m/s]
         ga = 0.0  # goal accel [m/ss]
 
         max_vel = 0.65  # max speed [m/s]
